@@ -71,12 +71,16 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-test" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+    <article id="post-learn-dynamic-programming" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2021/04/18/test/" class="article-date">
-  <time class="dt-published" datetime="2021-04-18T14:22:00.000Z" itemprop="datePublished">2021-04-18</time>
+    <a href="/2021/04/19/learn-dynamic-programming/" class="article-date">
+  <time class="dt-published" datetime="2021-04-19T09:32:00.000Z" itemprop="datePublished">2021-04-19</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/algorithm/">algorithm</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -85,7 +89,7 @@
         
   
     <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/04/18/test/">test</a>
+      <a class="p-name article-title" href="/2021/04/19/learn-dynamic-programming/">动态规划专题学习</a>
     </h1>
   
 
@@ -93,14 +97,42 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        
+        <h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2><hr>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><ol>
+<li>什么是动态规划</li>
+<li>什么情况下使用动态规划</li>
+<li>动态规划的解题步骤</li>
+<li>一些例题</li>
+</ol>
+<hr>
+<h2 id="1-什么是动态规划"><a href="#1-什么是动态规划" class="headerlink" title="1. 什么是动态规划"></a>1. 什么是动态规划</h2><p>以下一些资料引用自<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/529408?fr=aladdin">百度百科</a><br>动态规划（Dynamic Programming，DP）是运筹学的一个分支，是求解决策过程最优化的过程。多阶段决策问题：可将过程分成若干个<strong>互相联系</strong>的阶段，在它的<strong>每一阶段</strong>都需要作出决策，从而使整个过程达到最好的活动效果。<br>各个阶段采取的决策，与时间有关、决策依赖于当前状态，又随即<strong>引起状态的转移</strong>，一个决策序列就是在变化的状态中产生出来的，故有“动态”的含义。</p>
+<h2 id="2-什么情况下使用动态规划"><a href="#2-什么情况下使用动态规划" class="headerlink" title="2. 什么情况下使用动态规划"></a>2. 什么情况下使用动态规划</h2><p>看来以上对动态规划的定义，新接触的读者可能会一脸茫然，不过这也正常。因为教科书上的定义通常是抽象的，所以才需要加以解释才能通俗地理解。<br>为什么要用动态规划？搜索不也可以解决类似的问题吗。没错，这个问题问的好。因为搜索通常会对一些步骤反复的计算。举一个例子吧！</p>
+<p>给你一个数列（数列的项数从0开始），数列的前两项是0、1，往后的每一项都是它前两项的数值和。请编写一个求它任意项数值的程序。  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (n == <span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> f(n - <span class="number">1</span>) + f(n - <span class="number">2</span>);  <span class="comment">//等于它前两项的数值和</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>相信读者们一眼就看出这是一个斐波那契数列的递归搜索版本。我们来看一下它的运算过程。<br><img src="https://i.loli.net/2021/04/19/Km4nI1MJciOslEo.jpg" alt="递归求斐波那契数列.jpg"></p>
+<p>天啊，这树形的计算量，时间复杂度为O(2<sup>n</sup>)。存在很多冗余的计算——重复的子问题。这也是为什么要用动态规划的原因，我们可以很快的想出和理解斐波那契数列的推导公式<code>F(n)=f(n-1)+f(n-2)</code>。在空间花费量可以接受的前提下，我们要合理地去利用空间去换时间。很容易想到：我们可以将每次计算出来的结果存入数组，以后用到它的时候就直接从数组中取出来用不就行了。</p>
+<p>这里可能有些读者会想到：这不是记忆化搜索吗？如果你继续使用递归来求解，这个方法也是可取的。下面我们来引入今天的主题：不用搜索、基于迭代循环的<strong>动态规划算法</strong>。</p>
+<h2 id="3-动态规划的解题步骤"><a href="#3-动态规划的解题步骤" class="headerlink" title="3.动态规划的解题步骤"></a>3.动态规划的解题步骤</h2><p>参考自我的动态规划老师——<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ocZwfPlCWrJtVGACqFNAag">Carl的解决方案</a>。</p>
+<h3 id="1-确定dp数组以及下标的含义"><a href="#1-确定dp数组以及下标的含义" class="headerlink" title="1. 确定dp数组以及下标的含义"></a>1. 确定dp数组以及下标的含义</h3><p>为了一眼看出这是一个动态规划做法，我们暂且使用dp来代替f作为数组的名称。<br>dp[n]表示数列的第n项的值。<br>注：当我们写动态规划题迷茫的时候就问自己，我的dp数组的含义是什么。</p>
+<h3 id="2-确定递推公式"><a href="#2-确定递推公式" class="headerlink" title="2. 确定递推公式"></a>2. 确定递推公式</h3><p>通过上面的分析，或者是熟悉斐波那契数列的你一眼就看出来了。<br>dp[n]=f[n-1]+f[n-2]</p>
+<h3 id="3-dp数组如何初始化"><a href="#3-dp数组如何初始化" class="headerlink" title="3. dp数组如何初始化"></a>3. dp数组如何初始化</h3><p>根据规定，数列的第一项和第二项分别为0和1。<br>所以<code>dp[0]=0,dp[1]=1;</code></p>
+<h3 id="4-确定遍历顺序"><a href="#4-确定遍历顺序" class="headerlink" title="4. 确定遍历顺序"></a>4. 确定遍历顺序</h3><p>因为斐波那契数列的项都是由它的前两项所得出的，所以遍历顺序为从前往后。</p>
+<h3 id="5-举例推导dp数组"><a href="#5-举例推导dp数组" class="headerlink" title="5. 举例推导dp数组"></a>5. 举例推导dp数组</h3><p>打印出dp数组在推导时的过程数组，检查其是否与自己思考的是否相符。<br>注：找bug关键的一步。</p>
+<p>至此，这一题我们就写出来了。之所以选用这么简单的例题，是为了能够让读者更专注与理解动态规划的思想和解题步骤，而不是专注于怎么求出一个很难的递推过程。<br>题外话：其实这题还有更优的解法，使用两个变量不断更新作为当前要求的数列项的前两项值。但这样做就不能很好地理解动态规划了！</p>
+<p><a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/fibonacci-number/">原题链接</a></p>
+<p>参考代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">fib</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> <span class="keyword">long</span> f[<span class="number">31</span>] = &#123;<span class="number">0</span>, <span class="number">1</span>&#125;;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">            f[i] = f[i - <span class="number">1</span>] + f[i - <span class="number">2</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> f[n];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="4-一些例题"><a href="#4-一些例题" class="headerlink" title="4. 一些例题"></a>4. 一些例题</h2><p>暂未更新。</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://monody12.github.io/2021/04/18/test/" data-id="cknn9dzkg0000o8ubdpf3230f" data-title="test" class="article-share-link">分享</a>
+      <a data-url="https://monody12.github.io/2021/04/19/learn-dynamic-programming/" data-id="cknoefzpu000hdkub9n9a8sjl" data-title="动态规划专题学习" class="article-share-link">分享</a>
       
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dynamic-programming/" rel="tag">dynamic programming</a></li></ul>
+
     </footer>
   </div>
   
@@ -488,6 +520,10 @@ c 1
   <time class="dt-published" datetime="2021-04-10T04:27:00.000Z" itemprop="datePublished">2021-04-10</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/algorithm/">algorithm</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -533,7 +569,7 @@ c 1
 <p>输出答案：start:26 end:33<br>填入答案：26</p>
 <p><a href="#%E7%9B%AE%E5%BD%95">回到顶部</a></p>
 <hr>
-<h2 id="3-凑算式"><a href="#3-凑算式" class="headerlink" title="3.凑算式"></a><a name="凑算式">3.凑算式</a></h2><p><img src="https://i.loli.net/2021/04/10/3faTRYZwMnzrl1F.jpg" alt="凑算式题目.jpg"></p>
+<h2 id="3-凑算式-（全排列-枚举）"><a href="#3-凑算式-（全排列-枚举）" class="headerlink" title="3.凑算式 （全排列 枚举）"></a><a name="凑算式">3.凑算式 （全排列 枚举）</a></h2><p><img src="https://i.loli.net/2021/04/10/3faTRYZwMnzrl1F.jpg" alt="凑算式题目.jpg"></p>
 <p>这个算式中A<del>I代表1</del>9的数字，不同的字母代表不同的数字。</p>
 <p>比如：<br>6+8/3+952/714 就是一种解法，<br>5+3/1+972/486 是另一种解法。</p>
 <p>这个算式一共有多少种解法？</p>
@@ -605,6 +641,8 @@ c 1
       
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li></ul>
+
     </footer>
   </div>
   
@@ -616,7 +654,7 @@ c 1
     <article id="post-8th-Blue-Bridge-Cup-C-B" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2021/04/08/8th-Blue-Bridge-Cup-C-B/" class="article-date">
-  <time class="dt-published" datetime="2021-04-08T04:17:52.000Z" itemprop="datePublished">2021-04-08</time>
+  <time class="dt-published" datetime="2021-04-08T04:17:00.000Z" itemprop="datePublished">2021-04-08</time>
 </a>
     
   </div>
@@ -753,6 +791,8 @@ c 1
       
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li></ul>
+
     </footer>
   </div>
   
@@ -822,7 +862,7 @@ c 1
 <p>9的9次方等于: 387420489</p>
 <p><a href="#%E7%9B%AE%E5%BD%95">返回顶部</a></p>
 <hr>
-<h2 id="乘积尾零"><a href="#乘积尾零" class="headerlink" title="乘积尾零"></a><a name="乘积尾零">乘积尾零</a></h2><p>如下的10行数据，每行有10个整数，请你求出它们的乘积的末尾有多少个零？ </p>
+<h2 id="乘积尾零-（取模）"><a href="#乘积尾零-（取模）" class="headerlink" title="乘积尾零 （取模）"></a><a name="乘积尾零">乘积尾零 （取模）</a></h2><p>如下的10行数据，每行有10个整数，请你求出它们的乘积的末尾有多少个零？ </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">5650 4542 3554 473 946 4114 3871 9073 90 4329 </span><br><span class="line">2758 7949 6113 5659 5245 7432 3051 4434 6704 3594 </span><br><span class="line">9937 1173 6866 3397 4759 7557 3070 2287 1453 9899 </span><br><span class="line">1486 5722 3135 1170 4014 5510 5120 729 2880 9019 </span><br><span class="line">2049 698 4582 4346 4427 646 9742 7340 1230 7683 </span><br><span class="line">5693 7015 6887 7381 4172 4341 2909 2027 7355 5649 </span><br><span class="line">6701 6645 1671 5978 2704 9926 295 3125 3878 6785 </span><br><span class="line">2066 4247 4800 1578 6652 4616 1113 6205 3264 2915 </span><br><span class="line">3966 5291 2904 1285 2193 1428 2265 8730 9436 7074 </span><br><span class="line">689 5510 8243 6114 337 4096 8199 7313 3685 211 </span><br></pre></td></tr></table></figure>
 <p>注意：需要提交的是一个整数，表示末尾零的个数。不要填写任何多余内容。</p>
 <h3 id="解法-2"><a href="#解法-2" class="headerlink" title="解法"></a>解法</h3><ol>
@@ -864,7 +904,7 @@ c 1
 <hr>
 <h2 id="日志统计"><a href="#日志统计" class="headerlink" title="日志统计"></a><a name="日志统计">日志统计</a></h2><p><a href="#%E7%9B%AE%E5%BD%95">返回顶部</a></p>
 <hr>
-<h2 id="全球变暖"><a href="#全球变暖" class="headerlink" title="全球变暖"></a><a name="全球变暖">全球变暖</a></h2><p>你有一张某海域NxN像素的照片，”.”表示海洋、”#”表示陆地，如下所示：  </p>
+<h2 id="全球变暖-（bfs）"><a href="#全球变暖-（bfs）" class="headerlink" title="全球变暖 （bfs）"></a><a name="全球变暖">全球变暖 （bfs）</a></h2><p>你有一张某海域NxN像素的照片，”.”表示海洋、”#”表示陆地，如下所示：  </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.......</span><br><span class="line">.##....</span><br><span class="line">.##....</span><br><span class="line">....##.</span><br><span class="line">..####.</span><br><span class="line">...###.</span><br><span class="line">.......</span><br></pre></td></tr></table></figure>
 <p>其中”上下左右”四个方向上连在一起的一片陆地组成一座岛屿。例如上图就有2座岛屿。    </p>
 <p>由于全球变暖导致了海面上升，科学家预测未来几十年，岛屿边缘一个像素的范围会被海水淹没。具体来说如果一块陆地像素与海洋相邻(上下左右四个相邻像素中有海洋)，它就会被淹没。      </p>
@@ -898,7 +938,7 @@ c 1
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue-Bridge-Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/excel/" rel="tag">excel</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bfs/" rel="tag">bfs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/binary/" rel="tag">binary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bucket-sorting/" rel="tag">bucket sorting</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/excel/" rel="tag">excel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/modulus/" rel="tag">modulus</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/prefix-sum/" rel="tag">prefix sum</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/quick-sort/" rel="tag">quick sort</a></li></ul>
 
     </footer>
   </div>
@@ -1153,7 +1193,7 @@ c 1
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag"> dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Base-conversion/" rel="tag">Base conversion</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary-search/" rel="tag">Binary search</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue-Bridge-Cup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Codeforces/" rel="tag">Codeforces</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WeChat/" rel="tag">WeChat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bfs/" rel="tag">bfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/excel/" rel="tag">excel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcd/" rel="tag">gcd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interval/" rel="tag">interval</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/knapsack-problem/" rel="tag">knapsack problem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcm/" rel="tag">lcm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/miniprogram/" rel="tag">miniprogram</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/modulus/" rel="tag">modulus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sequence/" rel="tag">sequence</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/simulation/" rel="tag">simulation</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag"> dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Base-conversion/" rel="tag">Base conversion</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary-search/" rel="tag">Binary search</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Codeforces/" rel="tag">Codeforces</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WeChat/" rel="tag">WeChat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bfs/" rel="tag">bfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/binary/" rel="tag">binary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bucket-sorting/" rel="tag">bucket sorting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag">dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/excel/" rel="tag">excel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcd/" rel="tag">gcd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interval/" rel="tag">interval</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/knapsack-problem/" rel="tag">knapsack problem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcm/" rel="tag">lcm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/miniprogram/" rel="tag">miniprogram</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/modulus/" rel="tag">modulus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/prefix-sum/" rel="tag">prefix sum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/quick-sort/" rel="tag">quick sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sequence/" rel="tag">sequence</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/simulation/" rel="tag">simulation</a></li></ul>
     </div>
   </div>
 
@@ -1163,7 +1203,7 @@ c 1
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/dynamic-programming/" style="font-size: 10px;"> dynamic programming</a> <a href="/tags/Base-conversion/" style="font-size: 10px;">Base conversion</a> <a href="/tags/Binary-search/" style="font-size: 10px;">Binary search</a> <a href="/tags/Blue-Bridge-Cup/" style="font-size: 10px;">Blue Bridge Cup</a> <a href="/tags/Blue-Bridge-Cup/" style="font-size: 10px;">Blue-Bridge-Cup</a> <a href="/tags/Codeforces/" style="font-size: 13.33px;">Codeforces</a> <a href="/tags/WeChat/" style="font-size: 10px;">WeChat</a> <a href="/tags/algorithm/" style="font-size: 20px;">algorithm</a> <a href="/tags/bfs/" style="font-size: 10px;">bfs</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/excel/" style="font-size: 10px;">excel</a> <a href="/tags/gcd/" style="font-size: 10px;">gcd</a> <a href="/tags/greedy/" style="font-size: 16.67px;">greedy</a> <a href="/tags/interval/" style="font-size: 13.33px;">interval</a> <a href="/tags/knapsack-problem/" style="font-size: 10px;">knapsack problem</a> <a href="/tags/lcm/" style="font-size: 10px;">lcm</a> <a href="/tags/miniprogram/" style="font-size: 10px;">miniprogram</a> <a href="/tags/modulus/" style="font-size: 13.33px;">modulus</a> <a href="/tags/sequence/" style="font-size: 10px;">sequence</a> <a href="/tags/simulation/" style="font-size: 13.33px;">simulation</a>
+      <a href="/tags/dynamic-programming/" style="font-size: 10px;"> dynamic programming</a> <a href="/tags/Base-conversion/" style="font-size: 10px;">Base conversion</a> <a href="/tags/Binary-search/" style="font-size: 10px;">Binary search</a> <a href="/tags/Blue-Bridge-Cup/" style="font-size: 16px;">Blue Bridge Cup</a> <a href="/tags/Codeforces/" style="font-size: 12px;">Codeforces</a> <a href="/tags/WeChat/" style="font-size: 10px;">WeChat</a> <a href="/tags/algorithm/" style="font-size: 20px;">algorithm</a> <a href="/tags/bfs/" style="font-size: 12px;">bfs</a> <a href="/tags/binary/" style="font-size: 10px;">binary</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/bucket-sorting/" style="font-size: 10px;">bucket sorting</a> <a href="/tags/dynamic-programming/" style="font-size: 10px;">dynamic programming</a> <a href="/tags/enumeration/" style="font-size: 10px;">enumeration</a> <a href="/tags/excel/" style="font-size: 10px;">excel</a> <a href="/tags/gcd/" style="font-size: 10px;">gcd</a> <a href="/tags/greedy/" style="font-size: 18px;">greedy</a> <a href="/tags/interval/" style="font-size: 12px;">interval</a> <a href="/tags/knapsack-problem/" style="font-size: 10px;">knapsack problem</a> <a href="/tags/lcm/" style="font-size: 10px;">lcm</a> <a href="/tags/miniprogram/" style="font-size: 10px;">miniprogram</a> <a href="/tags/modulus/" style="font-size: 14px;">modulus</a> <a href="/tags/prefix-sum/" style="font-size: 10px;">prefix sum</a> <a href="/tags/quick-sort/" style="font-size: 10px;">quick sort</a> <a href="/tags/sequence/" style="font-size: 10px;">sequence</a> <a href="/tags/simulation/" style="font-size: 12px;">simulation</a>
     </div>
   </div>
 
@@ -1185,7 +1225,7 @@ c 1
       <ul>
         
           <li>
-            <a href="/2021/04/18/test/">test</a>
+            <a href="/2021/04/19/learn-dynamic-programming/">动态规划专题学习</a>
           </li>
         
           <li>

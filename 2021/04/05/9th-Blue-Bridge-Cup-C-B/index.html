@@ -15,10 +15,17 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2021/04/06/qFtPNURTpsWfvnJ.jpg">
 <meta property="article:published_time" content="2021-04-05T13:08:00.000Z">
-<meta property="article:modified_time" content="2021-04-17T13:46:12.000Z">
+<meta property="article:modified_time" content="2021-04-19T00:07:20.000Z">
 <meta property="article:author" content="Monody12">
-<meta property="article:tag" content="Blue-Bridge-Cup">
+<meta property="article:tag" content="greedy">
+<meta property="article:tag" content="Blue Bridge Cup">
+<meta property="article:tag" content="bfs">
+<meta property="article:tag" content="modulus">
 <meta property="article:tag" content="excel">
+<meta property="article:tag" content="binary">
+<meta property="article:tag" content="quick sort">
+<meta property="article:tag" content="bucket sorting">
+<meta property="article:tag" content="prefix sum">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://i.loli.net/2021/04/06/qFtPNURTpsWfvnJ.jpg">
   
@@ -138,7 +145,7 @@
 <p>9的9次方等于: 387420489</p>
 <p><a href="#%E7%9B%AE%E5%BD%95">返回顶部</a></p>
 <hr>
-<h2 id="乘积尾零"><a href="#乘积尾零" class="headerlink" title="乘积尾零"></a><a name="乘积尾零">乘积尾零</a></h2><p>如下的10行数据，每行有10个整数，请你求出它们的乘积的末尾有多少个零？ </p>
+<h2 id="乘积尾零-（取模）"><a href="#乘积尾零-（取模）" class="headerlink" title="乘积尾零 （取模）"></a><a name="乘积尾零">乘积尾零 （取模）</a></h2><p>如下的10行数据，每行有10个整数，请你求出它们的乘积的末尾有多少个零？ </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">5650 4542 3554 473 946 4114 3871 9073 90 4329 </span><br><span class="line">2758 7949 6113 5659 5245 7432 3051 4434 6704 3594 </span><br><span class="line">9937 1173 6866 3397 4759 7557 3070 2287 1453 9899 </span><br><span class="line">1486 5722 3135 1170 4014 5510 5120 729 2880 9019 </span><br><span class="line">2049 698 4582 4346 4427 646 9742 7340 1230 7683 </span><br><span class="line">5693 7015 6887 7381 4172 4341 2909 2027 7355 5649 </span><br><span class="line">6701 6645 1671 5978 2704 9926 295 3125 3878 6785 </span><br><span class="line">2066 4247 4800 1578 6652 4616 1113 6205 3264 2915 </span><br><span class="line">3966 5291 2904 1285 2193 1428 2265 8730 9436 7074 </span><br><span class="line">689 5510 8243 6114 337 4096 8199 7313 3685 211 </span><br></pre></td></tr></table></figure>
 <p>注意：需要提交的是一个整数，表示末尾零的个数。不要填写任何多余内容。</p>
 <h3 id="解法-2"><a href="#解法-2" class="headerlink" title="解法"></a>解法</h3><ol>
@@ -180,7 +187,7 @@
 <hr>
 <h2 id="日志统计"><a href="#日志统计" class="headerlink" title="日志统计"></a><a name="日志统计">日志统计</a></h2><p><a href="#%E7%9B%AE%E5%BD%95">返回顶部</a></p>
 <hr>
-<h2 id="全球变暖"><a href="#全球变暖" class="headerlink" title="全球变暖"></a><a name="全球变暖">全球变暖</a></h2><p>你有一张某海域NxN像素的照片，”.”表示海洋、”#”表示陆地，如下所示：  </p>
+<h2 id="全球变暖-（bfs）"><a href="#全球变暖-（bfs）" class="headerlink" title="全球变暖 （bfs）"></a><a name="全球变暖">全球变暖 （bfs）</a></h2><p>你有一张某海域NxN像素的照片，”.”表示海洋、”#”表示陆地，如下所示：  </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.......</span><br><span class="line">.##....</span><br><span class="line">.##....</span><br><span class="line">....##.</span><br><span class="line">..####.</span><br><span class="line">...###.</span><br><span class="line">.......</span><br></pre></td></tr></table></figure>
 <p>其中”上下左右”四个方向上连在一起的一片陆地组成一座岛屿。例如上图就有2座岛屿。    </p>
 <p>由于全球变暖导致了海面上升，科学家预测未来几十年，岛屿边缘一个像素的范围会被海水淹没。具体来说如果一块陆地像素与海洋相邻(上下左右四个相邻像素中有海洋)，它就会被淹没。      </p>
@@ -214,7 +221,7 @@
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue-Bridge-Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/excel/" rel="tag">excel</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bfs/" rel="tag">bfs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/binary/" rel="tag">binary</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/bucket-sorting/" rel="tag">bucket sorting</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/excel/" rel="tag">excel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/modulus/" rel="tag">modulus</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/prefix-sum/" rel="tag">prefix sum</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/quick-sort/" rel="tag">quick sort</a></li></ul>
 
     </footer>
   </div>
@@ -261,7 +268,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag"> dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Base-conversion/" rel="tag">Base conversion</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary-search/" rel="tag">Binary search</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue-Bridge-Cup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Codeforces/" rel="tag">Codeforces</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WeChat/" rel="tag">WeChat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bfs/" rel="tag">bfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/excel/" rel="tag">excel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcd/" rel="tag">gcd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interval/" rel="tag">interval</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/knapsack-problem/" rel="tag">knapsack problem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcm/" rel="tag">lcm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/miniprogram/" rel="tag">miniprogram</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/modulus/" rel="tag">modulus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sequence/" rel="tag">sequence</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/simulation/" rel="tag">simulation</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag"> dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Base-conversion/" rel="tag">Base conversion</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary-search/" rel="tag">Binary search</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Codeforces/" rel="tag">Codeforces</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WeChat/" rel="tag">WeChat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bfs/" rel="tag">bfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/binary/" rel="tag">binary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bucket-sorting/" rel="tag">bucket sorting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag">dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/excel/" rel="tag">excel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcd/" rel="tag">gcd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interval/" rel="tag">interval</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/knapsack-problem/" rel="tag">knapsack problem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcm/" rel="tag">lcm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/miniprogram/" rel="tag">miniprogram</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/modulus/" rel="tag">modulus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/prefix-sum/" rel="tag">prefix sum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/quick-sort/" rel="tag">quick sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sequence/" rel="tag">sequence</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/simulation/" rel="tag">simulation</a></li></ul>
     </div>
   </div>
 
@@ -271,7 +278,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/dynamic-programming/" style="font-size: 10px;"> dynamic programming</a> <a href="/tags/Base-conversion/" style="font-size: 10px;">Base conversion</a> <a href="/tags/Binary-search/" style="font-size: 10px;">Binary search</a> <a href="/tags/Blue-Bridge-Cup/" style="font-size: 10px;">Blue Bridge Cup</a> <a href="/tags/Blue-Bridge-Cup/" style="font-size: 10px;">Blue-Bridge-Cup</a> <a href="/tags/Codeforces/" style="font-size: 13.33px;">Codeforces</a> <a href="/tags/WeChat/" style="font-size: 10px;">WeChat</a> <a href="/tags/algorithm/" style="font-size: 20px;">algorithm</a> <a href="/tags/bfs/" style="font-size: 10px;">bfs</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/excel/" style="font-size: 10px;">excel</a> <a href="/tags/gcd/" style="font-size: 10px;">gcd</a> <a href="/tags/greedy/" style="font-size: 16.67px;">greedy</a> <a href="/tags/interval/" style="font-size: 13.33px;">interval</a> <a href="/tags/knapsack-problem/" style="font-size: 10px;">knapsack problem</a> <a href="/tags/lcm/" style="font-size: 10px;">lcm</a> <a href="/tags/miniprogram/" style="font-size: 10px;">miniprogram</a> <a href="/tags/modulus/" style="font-size: 13.33px;">modulus</a> <a href="/tags/sequence/" style="font-size: 10px;">sequence</a> <a href="/tags/simulation/" style="font-size: 13.33px;">simulation</a>
+      <a href="/tags/dynamic-programming/" style="font-size: 10px;"> dynamic programming</a> <a href="/tags/Base-conversion/" style="font-size: 10px;">Base conversion</a> <a href="/tags/Binary-search/" style="font-size: 10px;">Binary search</a> <a href="/tags/Blue-Bridge-Cup/" style="font-size: 16px;">Blue Bridge Cup</a> <a href="/tags/Codeforces/" style="font-size: 12px;">Codeforces</a> <a href="/tags/WeChat/" style="font-size: 10px;">WeChat</a> <a href="/tags/algorithm/" style="font-size: 20px;">algorithm</a> <a href="/tags/bfs/" style="font-size: 12px;">bfs</a> <a href="/tags/binary/" style="font-size: 10px;">binary</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/bucket-sorting/" style="font-size: 10px;">bucket sorting</a> <a href="/tags/dynamic-programming/" style="font-size: 10px;">dynamic programming</a> <a href="/tags/enumeration/" style="font-size: 10px;">enumeration</a> <a href="/tags/excel/" style="font-size: 10px;">excel</a> <a href="/tags/gcd/" style="font-size: 10px;">gcd</a> <a href="/tags/greedy/" style="font-size: 18px;">greedy</a> <a href="/tags/interval/" style="font-size: 12px;">interval</a> <a href="/tags/knapsack-problem/" style="font-size: 10px;">knapsack problem</a> <a href="/tags/lcm/" style="font-size: 10px;">lcm</a> <a href="/tags/miniprogram/" style="font-size: 10px;">miniprogram</a> <a href="/tags/modulus/" style="font-size: 14px;">modulus</a> <a href="/tags/prefix-sum/" style="font-size: 10px;">prefix sum</a> <a href="/tags/quick-sort/" style="font-size: 10px;">quick sort</a> <a href="/tags/sequence/" style="font-size: 10px;">sequence</a> <a href="/tags/simulation/" style="font-size: 12px;">simulation</a>
     </div>
   </div>
 
@@ -293,7 +300,7 @@
       <ul>
         
           <li>
-            <a href="/2021/04/18/test/">test</a>
+            <a href="/2021/04/19/learn-dynamic-programming/">动态规划专题学习</a>
           </li>
         
           <li>
