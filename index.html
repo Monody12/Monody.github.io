@@ -71,6 +71,119 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-union-set" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/05/04/union-set/" class="article-date">
+  <time class="dt-published" datetime="2021-05-04T13:12:00.000Z" itemprop="datePublished">2021-05-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/algorithm/">algorithm</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2021/05/04/union-set/">并查集</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>目录</p>
+<ol>
+<li>应用场景</li>
+<li>实现方式</li>
+<li>举例分析</li>
+</ol>
+<h2 id="1-应用场景"><a href="#1-应用场景" class="headerlink" title="1.应用场景"></a>1.应用场景</h2><p>在什么情况下需要使用并查集？<br>通常情况下在进行集合合并操作时，我们会将一个集合A中的元素全部导入另一个集合B。那么怎样导入呢，是把集合A的元素一个一个的拿出来依次加入集合B，加入的时候使用set或者hashset。在数据量比较小的情况下，这样是行得通的。如果数据量很大，并且一堆集合需要反复合并。其中一些元素可能被来回加入取出很多次，花费很多时间。这时候并查集就派上用场了。</p>
+<p>简而言之：大量的<strong>集合合并</strong>操作</p>
+<h2 id="2-实现方式"><a href="#2-实现方式" class="headerlink" title="2.实现方式"></a>2.实现方式</h2><h3 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h3><p>可以把元素之间用一个线连接起来，形成一个连通块，这个连通块不就是一个集合吗？那么我们在合并两个集合的时候将这两个连通块中的任意一个元素拿出来然后用线连接起来，这样两个连通块就变成了一个连通块，就实现了集合合并。</p>
+<p>而并查集实现以上介绍的方法非常巧妙。它使用了父元素的方式来记录当前元素是属于哪个元素的集合。即p[x]表示为x的父元素。而如果p[x]==x则表示这个集合的根（集合的根可以想象为这个集合的中心）就是x。合并集合就是将这个集合的根指向另一个集合的元素（通常写的时候直接指向根了）。</p>
+<h3 id="主要操作"><a href="#主要操作" class="headerlink" title="主要操作"></a>主要操作</h3><p>摘自<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%B9%B6%E6%9F%A5%E9%9B%86/9388442?fr=aladdin#1">百度百科</a>  </p>
+<h4 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h4><p>把每个点所在集合初始化为其自身。  <code>p[i] = i;</code><br>通常来说，这个步骤在每次使用该数据结构时只需要执行一次，无论何种实现方式，时间复杂度均为O(N)。  </p>
+<h4 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h4><p>查找元素x所在的集合，即根节点。 编写find(int x)函数 (到后面再介绍)</p>
+<h4 id="合并"><a href="#合并" class="headerlink" title="合并"></a>合并</h4><p>将两个元素所在的集合合并为一个集合。  <code>p[find(x)] = find(y);</code><br>通常来说，合并之前，应先判断两个元素是否属于同一集合，这可用上面的“查找”操作实现。</p>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><p>在查找一个集合的根时，如果这个集合中有大量的元素，而查询的元素又是距离根根元素最远的，那么经常查询，势必又会消耗大量的时间。那么有办法能让我们的元素尽可能的离根元素近吗？当然能！</p>
+<h4 id="路径压缩"><a href="#路径压缩" class="headerlink" title="路径压缩"></a>路径压缩</h4><p>使用路径压缩优化，可以在查询当前元素的根元素的时候直接把路径上的元素的父元素直接<strong>指向根元素</strong>，这样以来，并查集就呈现出了中心趋势，所有除根元素以外的元素都直接指向根元素了。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">	<span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;<span class="comment">//查找元素x所属集合的根节点</span></span><br><span class="line">		<span class="keyword">if</span> (p[x] != x)</span><br><span class="line">			p[x] = find(p[x]);<span class="comment">//查找父亲结点，顺带 路径压缩 优化</span></span><br><span class="line">		<span class="keyword">return</span> p[x];</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://monody12.github.io/2021/05/04/union-set/" data-id="ckoa1x4sb0000xwubcq9ugu30" data-title="并查集" class="article-share-link">分享</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/union-set/" rel="tag">union set</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-Web-Attack-Technology" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/04/29/Web-Attack-Technology/" class="article-date">
+  <time class="dt-published" datetime="2021-04-29T07:34:14.000Z" itemprop="datePublished">2021-04-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2021/04/29/Web-Attack-Technology/">Web攻击技术基础</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>目录  </p>
+<ol>
+<li>web攻击</li>
+<li>web攻击模式</li>
+<li>web攻击方式</li>
+</ol>
+<h2 id="web攻击"><a href="#web攻击" class="headerlink" title="web攻击"></a>web攻击</h2><p>随着当今世界网络进步的发展，我们的生活越来越离不开网络，基于http协议的Web网页是当下最受欢迎的网络协议技术之一。这虽然是一项成熟的技术，但它的安全缺陷也不可忽视。  </p>
+<p>设计http最初的目的是为了提供一种发布和接收HTML页面的方法，它本身不具备安全特性。虽然现在已经有很多手段能够提升http通信的安全性，例如https的ssl证书加密验证，以及cookie和session的用户身份验证等技术。它们能在网络被监听的时候对客户端与服务器间建立的通信起到加密保护和身份校验的作用。但是我们的Web服务器中可能出现一些安全漏洞可能会被攻击者利用。</p>
+<p>我们的Web服务器和数据库或者是客户端将可能成为攻击对象。</p>
+<h2 id="web攻击模式"><a href="#web攻击模式" class="headerlink" title="web攻击模式"></a>web攻击模式</h2><h3 id="主动攻击"><a href="#主动攻击" class="headerlink" title="主动攻击"></a>主动攻击</h3><h4 id="以服务器为目标的主动攻击"><a href="#以服务器为目标的主动攻击" class="headerlink" title="以服务器为目标的主动攻击"></a>以服务器为目标的主动攻击</h4><p>例如通过一些漏洞绕过服务器的验证，获取服务器上的资源。比如非法url访问，sql、os命令注入攻击。</p>
+<h3 id="被动攻击"><a href="#被动攻击" class="headerlink" title="被动攻击"></a>被动攻击</h3><h4 id="被动攻击（passive-attack）是指利用圈套策略执行攻击代码的攻击模式。在被动攻击过程中，攻击者不直接对目标-Web-应用访问发起攻击。"><a href="#被动攻击（passive-attack）是指利用圈套策略执行攻击代码的攻击模式。在被动攻击过程中，攻击者不直接对目标-Web-应用访问发起攻击。" class="headerlink" title="被动攻击（passive attack）是指利用圈套策略执行攻击代码的攻击模式。在被动攻击过程中，攻击者不直接对目标 Web 应用访问发起攻击。"></a>被动攻击（passive attack）是指利用圈套策略执行攻击代码的攻击模式。在被动攻击过程中，攻击者不直接对目标 Web 应用访问发起攻击。</h4><p>例如钓鱼的url链接，网页中被植入了攻击代码，使用户的账号密码或者是登录状态信息（cookies和会话id）泄露。被动攻击模式中具有代表性的攻击是跨站脚本攻击和跨站点请求<br>伪造。</p>
+<h2 id="web攻击方式"><a href="#web攻击方式" class="headerlink" title="web攻击方式"></a>web攻击方式</h2><h3 id="利用输入验证漏洞"><a href="#利用输入验证漏洞" class="headerlink" title="利用输入验证漏洞"></a>利用输入验证漏洞</h3><p>在web应用需要收集应用信息的时候通常会让用户输入一些信息，经过校验后提交至服务器，最终对数据库进行操作。</p>
+<p>而在校验过程中就有可能存在漏洞。校验通常分为两种。一种是<strong>客户端验证</strong>（JavaScript脚本），另一种是在<strong>服务器端验证</strong>（jsp，php等页面支持的语言）。</p>
+<p>在客户端进行JavaScript验证只能作为提高与用户的交互性和减轻服务器压力的一种解决方案，非常不安全。攻击者可以通过<strong>禁用</strong>或是<strong>篡改</strong>JavaScript验证脚本或者是<strong>修改提交内容</strong>就可以轻易绕过检测，向服务器提交一些错误或有攻击性的数据。</p>
+<p>而在服务器端为了防止攻击者提交恶意代码被执行，就必须做好输入语句的转义，防止恶意代码被执行。</p>
+<h3 id="跨站脚本攻击"><a href="#跨站脚本攻击" class="headerlink" title="跨站脚本攻击"></a>跨站脚本攻击</h3>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://monody12.github.io/2021/04/29/Web-Attack-Technology/" data-id="cko9xeron0000p4ubgfs4a5q7" data-title="Web攻击技术基础" class="article-share-link">分享</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-learn-dynamic-programming" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2021/04/19/learn-dynamic-programming/" class="article-date">
@@ -255,9 +368,13 @@ c 1
     <article id="post-5th-Blue-Bridge-Cup-C-B" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2021/04/14/5th-Blue-Bridge-Cup-C-B/" class="article-date">
-  <time class="dt-published" datetime="2021-04-14T10:12:10.000Z" itemprop="datePublished">2021-04-14</time>
+  <time class="dt-published" datetime="2021-04-14T10:12:00.000Z" itemprop="datePublished">2021-04-14</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/algorithm/">algorithm</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -352,7 +469,7 @@ c 1
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cmath&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> input freopen(<span class="meta-string">&quot;C:\\Users\\Administrator\\Desktop\\a.txt&quot;</span>,<span class="meta-string">&quot;r&quot;</span>,stdin)</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">check</span><span class="params">(<span class="keyword">double</span> i, <span class="keyword">double</span> j, <span class="keyword">double</span> k, <span class="keyword">double</span> l)</span> </span>&#123;  <span class="comment">//检查表达式是否正确</span></span><br><span class="line">    <span class="keyword">double</span> left = i / j * k / l;</span><br><span class="line">    <span class="keyword">double</span> right = (i * <span class="number">10</span> + k) / (j * <span class="number">10</span> + l);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">fabs</span>(left - right) &lt;= <span class="number">1e-5</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ans = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; <span class="number">10</span>; ++i)</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">1</span>; j &lt; <span class="number">10</span>; ++j)</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">1</span>; k &lt; <span class="number">10</span>; ++k)</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> l = <span class="number">1</span>; l &lt; <span class="number">10</span>; ++l) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (i == j &amp;&amp; k == l)  <span class="comment">//消除两对分子分母都相同的情况</span></span><br><span class="line">                        <span class="keyword">continue</span>;</span><br><span class="line">                    <span class="keyword">if</span> (check(i, j, k, l))</span><br><span class="line">                        ++ans;</span><br><span class="line">                &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>, ans);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p><a href="#%E7%9B%AE%E5%BD%95">回到顶部</a></p>
 <hr>
-<h2 id="六角填数"><a href="#六角填数" class="headerlink" title="六角填数"></a><a name="六角填数">六角填数</a></h2><p>如图【1.png】所示六角形中，填入1~12的数字。</p>
+<h2 id="六角填数-排列-枚举"><a href="#六角填数-排列-枚举" class="headerlink" title="六角填数 (排列 枚举)"></a><a name="六角填数">六角填数 (排列 枚举)</a></h2><p>如图【1.png】所示六角形中，填入1~12的数字。</p>
 <p>使得每条直线上的数字之和都相同。</p>
 <p>图中，已经替你填好了3个数字，请你计算星号位置所代表的数字是多少？</p>
 <p><img src="https://i.loli.net/2021/04/15/rHdhFzxbiCPnI3M.png" alt="六角填数题目.png"></p>
@@ -391,6 +508,8 @@ c 1
       
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dfs/" rel="tag">dfs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/permutation/" rel="tag">permutation</a></li></ul>
+
     </footer>
   </div>
   
@@ -402,9 +521,13 @@ c 1
     <article id="post-6th-Blue-Bridge-Cup-C-B" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2021/04/13/6th-Blue-Bridge-Cup-C-B/" class="article-date">
-  <time class="dt-published" datetime="2021-04-13T13:20:17.000Z" itemprop="datePublished">2021-04-13</time>
+  <time class="dt-published" datetime="2021-04-13T13:20:00.000Z" itemprop="datePublished">2021-04-13</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/algorithm/">algorithm</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -447,7 +570,7 @@ c 1
 <p>输出答案：2017-8-5</p>
 <p><a href="#%E7%9B%AE%E5%BD%95">回到顶端</a></p>
 <hr>
-<h2 id="3-三羊献瑞-（枚举）"><a href="#3-三羊献瑞-（枚举）" class="headerlink" title="3.三羊献瑞 （枚举）"></a><a name="三羊献瑞">3.三羊献瑞 （枚举）</a></h2><p>观察下面的加法算式：</p>
+<h2 id="3-三羊献瑞-（排列-枚举）"><a href="#3-三羊献瑞-（排列-枚举）" class="headerlink" title="3.三羊献瑞 （排列 枚举）"></a><a name="三羊献瑞">3.三羊献瑞 （排列 枚举）</a></h2><p>观察下面的加法算式：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">      祥 瑞 生 辉</span><br><span class="line">  +   三 羊 献 瑞</span><br><span class="line">-------------------</span><br><span class="line">   三 羊 生 瑞 气</span><br></pre></td></tr></table></figure>
 
 <p>其中，相同的汉字代表相同的数字，不同的汉字代表不同的数字。</p>
@@ -506,6 +629,8 @@ c 1
       
       
       
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/backtracking/" rel="tag">backtracking</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/dfs/" rel="tag">dfs</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/excel/" rel="tag">excel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/permutation/" rel="tag">permutation</a></li></ul>
+
     </footer>
   </div>
   
@@ -588,7 +713,7 @@ c 1
 <hr>
 <h2 id="5-抽签"><a href="#5-抽签" class="headerlink" title="5.抽签"></a><a name="抽签">5.抽签</a></h2><p><a href="#%E7%9B%AE%E5%BD%95">回到顶部</a></p>
 <hr>
-<h2 id="6-方格填数"><a href="#6-方格填数" class="headerlink" title="6.方格填数"></a><a name="方格填数">6.方格填数</a></h2><p>如下的10个格子<br><img src="https://i.loli.net/2021/04/11/iCT2wxzV8SbHsMU.jpg" alt="方格填数题目.jpg"></p>
+<h2 id="6-方格填数-（排列-枚举）"><a href="#6-方格填数-（排列-枚举）" class="headerlink" title="6.方格填数 （排列 枚举）"></a><a name="方格填数">6.方格填数 （排列 枚举）</a></h2><p>如下的10个格子<br><img src="https://i.loli.net/2021/04/11/iCT2wxzV8SbHsMU.jpg" alt="方格填数题目.jpg"></p>
 <p>（如果显示有问题，也可以参看【图1.jpg】）</p>
 <p>填入0~9的数字。要求：连续的两个数字不能相邻。<br>（左右、上下、对角都算相邻）</p>
 <p>一共有多少种可能的填数方案？</p>
@@ -600,7 +725,7 @@ c 1
 <hr>
 <h2 id="7-剪邮票"><a href="#7-剪邮票" class="headerlink" title="7.剪邮票"></a><a name="剪邮票">7.剪邮票</a></h2><p><a href="#%E7%9B%AE%E5%BD%95">回到顶部</a></p>
 <hr>
-<h2 id="8-四平方和"><a href="#8-四平方和" class="headerlink" title="8.四平方和"></a><a name="四平方和">8.四平方和</a></h2><p>四平方和定理，又称为拉格朗日定理：<br>每个正整数都可以表示为至多4个正整数的平方和。<br>如果把0包括进去，就正好可以表示为4个数的平方和。</p>
+<h2 id="8-四平方和-（枚举-哈希）"><a href="#8-四平方和-（枚举-哈希）" class="headerlink" title="8.四平方和 （枚举 哈希）"></a><a name="四平方和">8.四平方和 （枚举 哈希）</a></h2><p>四平方和定理，又称为拉格朗日定理：<br>每个正整数都可以表示为至多4个正整数的平方和。<br>如果把0包括进去，就正好可以表示为4个数的平方和。</p>
 <p>比如：<br>5 = 0^2 + 0^2 + 1^2 + 2^2<br>7 = 1^2 + 1^2 + 1^2 + 2^2<br>（^符号表示乘方的意思）</p>
 <p>对于一个给定的正整数，可能存在多种平方和的表示法。<br>要求你对4个数排序：<br>0 &lt;= a &lt;= b &lt;= c &lt;= d<br>并对所有的可能表示法按 a,b,c,d 为联合主键升序排列，最后输出第一个表示法</p>
 <p>程序输入为一个正整数N (N&lt;5000000)<br>要求输出4个非负整数，按从小到大排序，中间用空格分开</p>
@@ -610,7 +735,7 @@ c 1
 <p>资源约定：<br>峰值内存消耗 &lt; 256M<br>CPU消耗  &lt; 3000ms</p>
 <p>请严格按要求输出，不要画蛇添足地打印类似：“请您输入…” 的多余内容。</p>
 <p>所有代码放在同一个源文件中，调试通过后，拷贝提交该源码。</p>
-<h3 id="分析-4"><a href="#分析-4" class="headerlink" title="分析"></a>分析</h3><p>题意：将给出的任意一个数分成四个数的平方和，还要满足a≤b≤c≤d。<br>实现：我们可以采用枚举变量的方式从小到大枚举，这样就能保证满足这个条件。可以暴力的使用三层for循环去枚举abc，然后用减法来求出d。但是这样我觉得时间复杂度可能太高了，怕超时。于是我选择了只枚举两个变量。<br>首先将cd能够凑成的平方和存起来，为了方便在枚举ab的时候查询，选用数组哈希的方式将平方和映射到数组下标。枚举cd平方和的时候如果出现重复的值时<strong>只存入第一个cd变量</strong>，因为枚举时是按照字典序的，题目也要求我们要按照字典序。因此按字典序枚举ab时出来的第一个答案就是我们要找的答案。</p>
+<h3 id="分析-4"><a href="#分析-4" class="headerlink" title="分析"></a>分析</h3><p>题意：将给出的任意一个数分成四个数的平方和，还要满足a≤b≤c≤d。<br>实现：我们可以采用枚举变量的方式从小到大枚举，这样就能保证满足这个条件。可以暴力的使用三层for循环去枚举abc，然后用减法来求出d。但是这样我觉得时间复杂度可能太高了，怕超时。于是我选择了只枚举两个变量。<br>首先将cd能够凑成的平方和存起来，为了方便在枚举ab的时候查询，选用<strong>数组哈希</strong>的方式将平方和映射到数组下标。枚举cd平方和的时候如果出现重复的值时<strong>只存入第一个cd变量</strong>，因为枚举时是按照字典序的，题目也要求我们要按照字典序。因此按字典序枚举ab时出来的第一个答案就是我们要找的答案。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> input freopen(<span class="meta-string">&quot;C:\\Users\\Administrator\\Desktop\\a.txt&quot;</span>,<span class="meta-string">&quot;r&quot;</span>,stdin)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> maxn = <span class="number">7e6</span> + <span class="number">2</span>;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">a</span> &#123;</span></span><br><span class="line">    <span class="keyword">int</span> c = <span class="number">-1</span>, d;  <span class="comment">//存储平方和为sum[]时c和d的值</span></span><br><span class="line">&#125; sum[maxn];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//input;</span></span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;n);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> c = <span class="number">0</span>; c * c &lt;= n; ++c)  <span class="comment">//枚举c和d可能出现的平方和组成</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> d = <span class="number">0</span>; c * c + d * d &lt;= n; ++d) &#123;</span><br><span class="line">            <span class="keyword">int</span> square = c * c + d * d;</span><br><span class="line">            <span class="keyword">if</span> (sum[square].c == <span class="number">-1</span>) <span class="comment">//按字典序枚举 所以只需保留第一个</span></span><br><span class="line">                sum[square].c = c, sum[square].d = d;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> a = <span class="number">0</span>; a * a &lt;= n; ++a) &#123;  <span class="comment">//枚举ab的同时寻找与之对应的 cd对 </span></span><br><span class="line">    数组哈希查找</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> b = <span class="number">0</span>; b * b + a * a &lt;= n; ++b) &#123;</span><br><span class="line">            <span class="keyword">int</span> val = n - a * a - b * b;</span><br><span class="line">            <span class="keyword">if</span> (sum[val].c != <span class="number">-1</span>) &#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;%d %d %d %d&quot;</span>, a, b, sum[val].c, sum[val].d);</span><br><span class="line">                <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><a href="#%E7%9B%AE%E5%BD%95">回到顶部</a></p>
 <hr>
@@ -641,7 +766,7 @@ c 1
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hash/" rel="tag">hash</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/permutation/" rel="tag">permutation</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/quick-sort/" rel="tag">quick sort</a></li></ul>
 
     </footer>
   </div>
@@ -657,6 +782,10 @@ c 1
   <time class="dt-published" datetime="2021-04-08T04:17:00.000Z" itemprop="datePublished">2021-04-08</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/algorithm/">algorithm</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -791,7 +920,7 @@ c 1
       
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/knapsack/" rel="tag">knapsack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/math/" rel="tag">math</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/prime/" rel="tag">prime</a></li></ul>
 
     </footer>
   </div>
@@ -1050,124 +1179,6 @@ c 1
 
 
   
-    <article id="post-Codeforces-Round-708-Div-2" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/04/04/Codeforces-Round-708-Div-2/" class="article-date">
-  <time class="dt-published" datetime="2021-04-04T08:46:00.000Z" itemprop="datePublished">2021-04-04</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/algorithm/">algorithm</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/04/04/Codeforces-Round-708-Div-2/">Codeforces Round #708 (Div. 2)</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h2 id="B-M-arrays-贪心-模数"><a href="#B-M-arrays-贪心-模数" class="headerlink" title="B. M-arrays(贪心 模数)"></a>B. M-arrays(贪心 模数)</h2><h3 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h3><p>将一个数组中的元素按以下两种条件重组成若干数组</p>
-<ul>
-<li>数组中的相邻元素之和是m的倍数</li>
-<li>数组中只用一个元素<br>求最少需要重组成多少个数组</li>
-</ul>
-<h3 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h3><h4 id="尽量使用数学解法-避免模拟"><a href="#尽量使用数学解法-避免模拟" class="headerlink" title="尽量使用数学解法: 避免模拟"></a>尽量使用数学解法: 避免模拟</h4><p>模拟(错误解法)<br>思路: 每次拿出一个存在的数, 然后找出能与其加和为m的数。找的时候不断循环，直到桶为0为止。<br>错误用例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1</span><br><span class="line">7 6</span><br><span class="line">2 2 2 4 4 4 4</span><br></pre></td></tr></table></figure>
-<p>如果先模拟到起始点为2则会造成不能充分利用。2，4，2，4，2，4<br>而如果4作为起点，则可以充分利用。4，2，4，2，4，2，4</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> input freopen(<span class="meta-string">&quot;C:\\Users\\Administrator\\Desktop\\a.txt&quot;</span>,<span class="meta-string">&quot;r&quot;</span>,stdin)</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> a[<span class="number">100005</span>], cnt[<span class="number">100005</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    input;</span><br><span class="line">    <span class="keyword">int</span> t, n, m;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;t);</span><br><span class="line">    <span class="keyword">while</span> (t--) &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;n, &amp;m);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;a[i]);</span><br><span class="line">            a[i] %= m;</span><br><span class="line">            ++cnt[a[i]]; <span class="comment">//桶计数</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// sort(a, a + n);</span></span><br><span class="line">        <span class="keyword">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> (cnt[a[i]] &lt;= <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">int</span> tmp = a[i]; <span class="comment">//每次取出序列中的第一个元素</span></span><br><span class="line">            --cnt[a[i]];</span><br><span class="line">            <span class="keyword">int</span> dif = (m - tmp) % m;<span class="comment">//寻找与其匹配的数</span></span><br><span class="line">            <span class="keyword">while</span> (cnt[dif] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                --cnt[dif];</span><br><span class="line">                dif = (m - dif) % m;</span><br><span class="line">            &#125;</span><br><span class="line">            ++ans;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, ans);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>根据上面的失败经验，我们发现了一个规律。在两个互相匹配的数的个数与生成序列是有规律的。如果两个数的个数绝对值之差小于等于0，那么就只需要一个序列。否则需要多出来的那一个数自己单独成一个序列了。</p>
-<p>通过代码：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cmath&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> input freopen(<span class="meta-string">&quot;C:\\Users\\Administrator\\Desktop\\a.txt&quot;</span>,<span class="meta-string">&quot;r&quot;</span>,stdin)</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> a[<span class="number">100005</span>], cnt[<span class="number">100005</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//input;</span></span><br><span class="line">    <span class="keyword">int</span> t, n, m;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;t);</span><br><span class="line">    <span class="keyword">while</span> (t--) &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;n, &amp;m);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;a[i]);</span><br><span class="line">            a[i] %= m;</span><br><span class="line">            ++cnt[a[i]]; <span class="comment">//桶计数</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// sort(a, a + n);</span></span><br><span class="line">        <span class="keyword">int</span> ans = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> (cnt[a[i]] &lt;= <span class="number">0</span>) <span class="comment">//该数不存在</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">int</span> a1 = a[i], a2 = (m - a[i]) % m; <span class="comment">//本次配对的两个数</span></span><br><span class="line">            <span class="keyword">int</span> t1 = cnt[a1], t2 = cnt[a2];</span><br><span class="line">            ans += max(<span class="number">1</span>, <span class="built_in">abs</span>(t1 - t2)); </span><br><span class="line">            cnt[a1] = cnt[a2] = <span class="number">0</span>; <span class="comment">//两个数全被用完</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, ans);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="C1-k-LCM-easy-version-（数学-最小公倍数）"><a href="#C1-k-LCM-easy-version-（数学-最小公倍数）" class="headerlink" title="C1. k-LCM (easy version) （数学 最小公倍数）"></a>C1. k-LCM (easy version) （数学 最小公倍数）</h2><h3 id="题意-1"><a href="#题意-1" class="headerlink" title="题意"></a>题意</h3><p>将一个整数n分成3个整数，这三个整数满足它们的最小公倍数不大于n/2，并且它们之和等于n。</p>
-<h3 id="分类讨论"><a href="#分类讨论" class="headerlink" title="分类讨论"></a>分类讨论</h3><ol>
-<li>当n为奇数时，拿出一个1，然后对半平分。对半平分可以很好的满足最小公倍数不超过n的一半。1，n/2，n/2</li>
-<li>当n为偶数时，并且n/2为奇数。因为n/2为奇数，所以n/2-1必定为偶数，所以答案为。2，n/2-1，n/2-1</li>
-<li>当n为偶数时，并且n/2为偶数。那么这个数就是4的倍数。所以可以分成：n/4，n/4，n/2。</li>
-</ol>
-<p>很巧妙的一种数学解法，如果模拟的话会超时，我就试过了。。。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cmath&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> input freopen(<span class="meta-string">&quot;C:\\Users\\Administrator\\Desktop\\a.txt&quot;</span>,<span class="meta-string">&quot;r&quot;</span>,stdin)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//input;</span></span><br><span class="line">    <span class="keyword">int</span> t, n, k;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;t);</span><br><span class="line">    <span class="keyword">while</span> (t--) &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>, &amp;n, &amp;k);</span><br><span class="line">        <span class="keyword">if</span> (n % <span class="number">2</span> == <span class="number">1</span>) <span class="comment">//n为奇数  3: 1 1 1</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;1 %d %d\n&quot;</span>, n / <span class="number">2</span>, n / <span class="number">2</span>);</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (n / <span class="number">2</span> % <span class="number">2</span> == <span class="number">1</span>) <span class="comment">// n/2为奇数  14: 2 6 6</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;2 %d %d\n&quot;</span>, n / <span class="number">2</span> - <span class="number">1</span>, n / <span class="number">2</span> - <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">else</span>  <span class="comment">// n/2为偶数  8: 2 2 4</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d %d %d\n&quot;</span>, n / <span class="number">4</span>, n / <span class="number">4</span>, n / <span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://monody12.github.io/2021/04/04/Codeforces-Round-708-Div-2/" data-id="cknn7ye80000ic0ubd8acabfu" data-title="Codeforces Round #708 (Div. 2)" class="article-share-link">分享</a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Codeforces/" rel="tag">Codeforces</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/lcm/" rel="tag">lcm</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/modulus/" rel="tag">modulus</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-Arithmetic" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/04/02/Arithmetic/" class="article-date">
-  <time class="dt-published" datetime="2021-04-02T03:11:21.000Z" itemprop="datePublished">2021-04-02</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/04/02/Arithmetic/">数论</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><ol>
-<li><a href="#%E8%B4%A8%E6%95%B0%E5%88%A4%E6%96%AD">质数判断</a><br><a href="#%E8%AF%95%E9%99%A4%E6%B3%95">试除法</a><br><a href="#%E7%BA%BF%E6%80%A7%E7%AD%9B">线性筛</a></li>
-<li><a href="#%E5%88%86%E8%A7%A3%E8%B4%A8%E5%9B%A0%E6%95%B0">分解质因数</a>  </li>
-<li><a href="#%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0%E3%80%81%E6%9C%80%E5%B0%8F%E5%85%AC%E5%80%8D%E6%95%B0">最大公因数、最小公倍数</a></li>
-<li><a href="#%E5%BF%AB%E9%80%9F%E5%B9%82">快速幂</a></li>
-<li><a href="#%E6%AC%A7%E6%8B%89%E5%85%AC%E5%BC%8F">欧拉公式</a></li>
-</ol>
-<h2 id="一、质数判断"><a href="#一、质数判断" class="headerlink" title="一、质数判断"></a>一、<a name="质数判断">质数判断</a></h2><h3 id="试除法"><a href="#试除法" class="headerlink" title="试除法"></a><a name="试除法">试除法</a></h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cmath&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> input freopen(<span class="meta-string">&quot;C:\\Users\\Administrator\\Desktop\\a.txt&quot;</span>,<span class="meta-string">&quot;r&quot;</span>,stdin)</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">isprime</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n &lt; <span class="number">2</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">int</span> x = <span class="built_in">sqrt</span>(n);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= x; ++i)</span><br><span class="line">        <span class="keyword">if</span> (n % i == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n, num;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">    <span class="keyword">while</span> (n--) &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;num);</span><br><span class="line">        <span class="keyword">if</span> (isprime(num))<span class="built_in">puts</span>(<span class="string">&quot;Yes&quot;</span>);</span><br><span class="line">        <span class="keyword">else</span> <span class="built_in">puts</span>(<span class="string">&quot;No&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h3 id="线性筛"><a href="#线性筛" class="headerlink" title="线性筛"></a><a name="线性筛">线性筛</a></h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> maxn 1000006</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; primes;</span><br><span class="line"><span class="keyword">bool</span> isprime[maxn];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">selectPrime</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (isprime[i] == <span class="number">0</span>)</span><br><span class="line">            primes.push_back(i);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; primes[j] &lt;= n / i; ++j) &#123;</span><br><span class="line">            isprime[primes[j] * i] = <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (i % primes[j] == <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">    selectPrime(n);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>, primes.size());</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="二、分解质因数"><a href="#二、分解质因数" class="headerlink" title="二、分解质因数"></a>二、<a name="分解质因数">分解质因数</a></h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">primefactor</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n / i; ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (n % i == <span class="number">0</span>) &#123;<span class="comment">//找到因子</span></span><br><span class="line">            <span class="keyword">int</span> sum = <span class="number">0</span>;<span class="comment">//因子i出现的次数  题中叫指数</span></span><br><span class="line">            <span class="keyword">while</span> (n % i == <span class="number">0</span>) &#123;<span class="comment">//循环找出n中含有的i因子</span></span><br><span class="line">                n /= i;</span><br><span class="line">                ++sum;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;%d %d\n&quot;</span>, i, sum);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (n &gt; <span class="number">1</span>)<span class="comment">//最后剩下的数为质数</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d 1\n&quot;</span>, n);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n, num;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">    <span class="keyword">while</span> (n--) &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;num);</span><br><span class="line">        primefactor(num);</span><br><span class="line">        <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="三、最大公因数、最小公倍数"><a href="#三、最大公因数、最小公倍数" class="headerlink" title="三、最大公因数、最小公倍数"></a>三、<a name="最大公因数、最小公倍数">最大公因数、最小公倍数</a></h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">gcd</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;<span class="comment">//最大公约数</span></span><br><span class="line">    <span class="keyword">return</span> b ? gcd(b, a % b) : a;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">lcm</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;<span class="comment">//最小公倍数</span></span><br><span class="line">    <span class="keyword">return</span> a * b ? (a * b) / gcd(a, b) : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; gcd(<span class="number">16</span>, <span class="number">24</span>) &lt;&lt; <span class="built_in">endl</span>;  <span class="comment">//输出8</span></span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; lcm(<span class="number">16</span>, <span class="number">24</span>) &lt;&lt; <span class="built_in">endl</span>;  <span class="comment">//输出48</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="四、快速幂"><a href="#四、快速幂" class="headerlink" title="四、快速幂"></a>四、<a name="快速幂">快速幂</a></h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> input freopen(<span class="meta-string">&quot;C:\\Users\\Administrator\\Desktop\\a.txt&quot;</span>,<span class="meta-string">&quot;r&quot;</span>,stdin)</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="keyword">long</span> ll;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">PowerMod</span><span class="params">(ll a, ll b, ll c)</span> </span>&#123;</span><br><span class="line">    ll ans = <span class="number">1</span> % c;</span><br><span class="line">    a %= c;</span><br><span class="line">    <span class="keyword">while</span> (b) &#123;</span><br><span class="line">        <span class="keyword">if</span> (b &amp; <span class="number">1</span>)ans = (ans * a) % c;</span><br><span class="line">        b &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">        a = (a * a) % c;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    input;</span><br><span class="line">    <span class="keyword">int</span> n, i, a, b, p;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">    <span class="keyword">while</span> (n--) &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>, &amp;a, &amp;b, &amp;p);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, PowerMod(a, b, p));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="五、欧拉公式"><a href="#五、欧拉公式" class="headerlink" title="五、欧拉公式"></a>五、<a name="欧拉公式">欧拉公式</a></h2><p>欧拉函数：1∼N 中与 N 互质的数的个数被称为欧拉函数，记为 ϕ(N)。<br>以下为求欧拉函数的模板</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">euler</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i, ans = n;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">2</span>; i &lt;= n / i; ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (n % i == <span class="number">0</span>) &#123;</span><br><span class="line">            ans = ans / i * (i - <span class="number">1</span>);<span class="comment">//由欧拉函数公式推出</span></span><br><span class="line">            <span class="keyword">while</span> (n % i == <span class="number">0</span>)<span class="comment">//与质因子出现次数无关</span></span><br><span class="line">                n /= i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (n &gt; <span class="number">1</span>) ans = ans / n * (n - <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> ans;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n, a;</span><br><span class="line">    <span class="built_in">cin</span> &gt;&gt; n;</span><br><span class="line">    <span class="keyword">while</span> (n--) &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;a);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, euler(a));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://monody12.github.io/2021/04/02/Arithmetic/" data-id="cknltbcmw0002ucub140f7q0m" data-title="数论" class="article-share-link">分享</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
@@ -1193,7 +1204,7 @@ c 1
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag"> dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Base-conversion/" rel="tag">Base conversion</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary-search/" rel="tag">Binary search</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Codeforces/" rel="tag">Codeforces</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WeChat/" rel="tag">WeChat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bfs/" rel="tag">bfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/binary/" rel="tag">binary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bucket-sorting/" rel="tag">bucket sorting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag">dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/excel/" rel="tag">excel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcd/" rel="tag">gcd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interval/" rel="tag">interval</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/knapsack-problem/" rel="tag">knapsack problem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcm/" rel="tag">lcm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/miniprogram/" rel="tag">miniprogram</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/modulus/" rel="tag">modulus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/prefix-sum/" rel="tag">prefix sum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/quick-sort/" rel="tag">quick sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sequence/" rel="tag">sequence</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/simulation/" rel="tag">simulation</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag"> dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Base-conversion/" rel="tag">Base conversion</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Binary-search/" rel="tag">Binary search</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Blue-Bridge-Cup/" rel="tag">Blue Bridge Cup</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Codeforces/" rel="tag">Codeforces</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/WeChat/" rel="tag">WeChat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/algorithm/" rel="tag">algorithm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/backtracking/" rel="tag">backtracking</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bfs/" rel="tag">bfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/binary/" rel="tag">binary</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/blog/" rel="tag">blog</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/bucket-sorting/" rel="tag">bucket sorting</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dfs/" rel="tag">dfs</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/dynamic-programming/" rel="tag">dynamic programming</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/enumeration/" rel="tag">enumeration</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/excel/" rel="tag">excel</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gcd/" rel="tag">gcd</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/greedy/" rel="tag">greedy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hash/" rel="tag">hash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/interval/" rel="tag">interval</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/knapsack/" rel="tag">knapsack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/knapsack-problem/" rel="tag">knapsack problem</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/lcm/" rel="tag">lcm</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/math/" rel="tag">math</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/miniprogram/" rel="tag">miniprogram</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/modulus/" rel="tag">modulus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/permutation/" rel="tag">permutation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/prefix-sum/" rel="tag">prefix sum</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/prime/" rel="tag">prime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/quick-sort/" rel="tag">quick sort</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/sequence/" rel="tag">sequence</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/simulation/" rel="tag">simulation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/union-set/" rel="tag">union set</a></li></ul>
     </div>
   </div>
 
@@ -1203,7 +1214,7 @@ c 1
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/dynamic-programming/" style="font-size: 10px;"> dynamic programming</a> <a href="/tags/Base-conversion/" style="font-size: 10px;">Base conversion</a> <a href="/tags/Binary-search/" style="font-size: 10px;">Binary search</a> <a href="/tags/Blue-Bridge-Cup/" style="font-size: 16px;">Blue Bridge Cup</a> <a href="/tags/Codeforces/" style="font-size: 12px;">Codeforces</a> <a href="/tags/WeChat/" style="font-size: 10px;">WeChat</a> <a href="/tags/algorithm/" style="font-size: 20px;">algorithm</a> <a href="/tags/bfs/" style="font-size: 12px;">bfs</a> <a href="/tags/binary/" style="font-size: 10px;">binary</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/bucket-sorting/" style="font-size: 10px;">bucket sorting</a> <a href="/tags/dynamic-programming/" style="font-size: 10px;">dynamic programming</a> <a href="/tags/enumeration/" style="font-size: 10px;">enumeration</a> <a href="/tags/excel/" style="font-size: 10px;">excel</a> <a href="/tags/gcd/" style="font-size: 10px;">gcd</a> <a href="/tags/greedy/" style="font-size: 18px;">greedy</a> <a href="/tags/interval/" style="font-size: 12px;">interval</a> <a href="/tags/knapsack-problem/" style="font-size: 10px;">knapsack problem</a> <a href="/tags/lcm/" style="font-size: 10px;">lcm</a> <a href="/tags/miniprogram/" style="font-size: 10px;">miniprogram</a> <a href="/tags/modulus/" style="font-size: 14px;">modulus</a> <a href="/tags/prefix-sum/" style="font-size: 10px;">prefix sum</a> <a href="/tags/quick-sort/" style="font-size: 10px;">quick sort</a> <a href="/tags/sequence/" style="font-size: 10px;">sequence</a> <a href="/tags/simulation/" style="font-size: 12px;">simulation</a>
+      <a href="/tags/dynamic-programming/" style="font-size: 10px;"> dynamic programming</a> <a href="/tags/Base-conversion/" style="font-size: 10px;">Base conversion</a> <a href="/tags/Binary-search/" style="font-size: 10px;">Binary search</a> <a href="/tags/Blue-Bridge-Cup/" style="font-size: 18px;">Blue Bridge Cup</a> <a href="/tags/Codeforces/" style="font-size: 12px;">Codeforces</a> <a href="/tags/WeChat/" style="font-size: 10px;">WeChat</a> <a href="/tags/algorithm/" style="font-size: 20px;">algorithm</a> <a href="/tags/backtracking/" style="font-size: 10px;">backtracking</a> <a href="/tags/bfs/" style="font-size: 12px;">bfs</a> <a href="/tags/binary/" style="font-size: 10px;">binary</a> <a href="/tags/blog/" style="font-size: 10px;">blog</a> <a href="/tags/bucket-sorting/" style="font-size: 10px;">bucket sorting</a> <a href="/tags/dfs/" style="font-size: 12px;">dfs</a> <a href="/tags/dynamic-programming/" style="font-size: 10px;">dynamic programming</a> <a href="/tags/enumeration/" style="font-size: 16px;">enumeration</a> <a href="/tags/excel/" style="font-size: 12px;">excel</a> <a href="/tags/gcd/" style="font-size: 10px;">gcd</a> <a href="/tags/greedy/" style="font-size: 20px;">greedy</a> <a href="/tags/hash/" style="font-size: 10px;">hash</a> <a href="/tags/interval/" style="font-size: 12px;">interval</a> <a href="/tags/knapsack/" style="font-size: 10px;">knapsack</a> <a href="/tags/knapsack-problem/" style="font-size: 10px;">knapsack problem</a> <a href="/tags/lcm/" style="font-size: 10px;">lcm</a> <a href="/tags/math/" style="font-size: 10px;">math</a> <a href="/tags/miniprogram/" style="font-size: 10px;">miniprogram</a> <a href="/tags/modulus/" style="font-size: 14px;">modulus</a> <a href="/tags/permutation/" style="font-size: 14px;">permutation</a> <a href="/tags/prefix-sum/" style="font-size: 10px;">prefix sum</a> <a href="/tags/prime/" style="font-size: 10px;">prime</a> <a href="/tags/quick-sort/" style="font-size: 12px;">quick sort</a> <a href="/tags/sequence/" style="font-size: 10px;">sequence</a> <a href="/tags/simulation/" style="font-size: 12px;">simulation</a> <a href="/tags/union-set/" style="font-size: 10px;">union set</a>
     </div>
   </div>
 
@@ -1212,7 +1223,7 @@ c 1
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/02/">二月 2021</a></li></ul>
     </div>
   </div>
 
@@ -1225,6 +1236,14 @@ c 1
       <ul>
         
           <li>
+            <a href="/2021/05/04/union-set/">并查集</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/29/Web-Attack-Technology/">Web攻击技术基础</a>
+          </li>
+        
+          <li>
             <a href="/2021/04/19/learn-dynamic-programming/">动态规划专题学习</a>
           </li>
         
@@ -1234,14 +1253,6 @@ c 1
         
           <li>
             <a href="/2021/04/14/5th-Blue-Bridge-Cup-C-B/">第五届蓝桥杯大赛软件类省赛 C/C++ 大学B 组</a>
-          </li>
-        
-          <li>
-            <a href="/2021/04/13/6th-Blue-Bridge-Cup-C-B/">第六届蓝桥杯大赛软件类省赛 C/C++ 大学B 组</a>
-          </li>
-        
-          <li>
-            <a href="/2021/04/10/7th-Blue-Bridge-Cup-C-B/">第七届蓝桥杯大赛软件类省赛 C/C++ 大学B 组</a>
           </li>
         
       </ul>
